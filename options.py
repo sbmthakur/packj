@@ -14,6 +14,8 @@ class Options():
 										 description="Packj flags malicious/risky open-source packages")
 		parser.add_argument("-d", "--debug", dest="debug", \
 				help="Enable debugging", action="store_true")
+		parser.add_argument("-dyn", "--dynamic", dest="dynamic", \
+				help="Analyze package with strace", action="store_true")
 		parser.add_argument(dest="pm_name", \
 				help="Package manager (e.g., pypi, npm)", action="store")
 		parser.add_argument(dest="pkg_name", \

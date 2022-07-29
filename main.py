@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from __future__ import print_function
 
 from dataclasses import dataclass
@@ -677,6 +676,11 @@ def get_base_pkg_info():
 							format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s')
 	else:
 		logging.getLogger().setLevel(logging.ERROR)
+
+	if args.dynamic:
+		# invoke strace-parser
+		#strace -f -e trace=network,file,process -ttt -T -o strace_overcommit.log
+		breakpoint()
 
 	pm_name = args.pm_name.lower()
 	if pm_name == 'pypi':
