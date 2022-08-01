@@ -582,7 +582,7 @@ def main(pm_enum, pm_name, pkg_name):
 		install_cmd = None
 
 		if pm_name == 'pypi':
-			install_cmd = f'pip install -quiet {pkg_name}'
+			install_cmd = f'pip install --quiet {pkg_name}'
 		elif pm_name == 'npm':
 			install_cmd = f'npm install --silent {pkg_name}'
 		elif pm_name == 'rubygems':
