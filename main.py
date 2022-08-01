@@ -571,6 +571,29 @@ def analyze_apis(pm_name, pkg_name, ver_str, filepath, risks, report):
 
 def main(pm_enum, pm_name, pkg_name):
 
+	from options import Options
+	opts = Options(sys.argv[1:])
+	assert opts, 'Failed to parse cmdline args!'
+
+	args = opts.args()
+
+	if args.dynamic:
+
+		install_cmd = None
+
+		if pm_name == 'pypi':
+			install_cmd = f'pip install {pkg_name}'
+		elif pm_name == 'npm':
+			install_cmd = f'npm i {pkg_name}'
+
+		cmd = f'cd strace-parser-py/ && strace -f -e trace=network,file,process -ttt -T -o strace_{pkg_name}.log {install_cmd} && python3 test.py strace_{pkg_name}.log'
+		os.system(cmd)
+
+		if os.path.exists('./strace-parser-py/summary.json'):
+			print(f'Summary created for {pkg_name}')
+		else:
+			print(f'Could not anaylyze {pkg_name}')
+
 	try:
 		build_threat_model()
 	except Exception as e:
@@ -676,11 +699,6 @@ def get_base_pkg_info():
 							format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s')
 	else:
 		logging.getLogger().setLevel(logging.ERROR)
-
-	if args.dynamic:
-		# invoke strace-parser
-		#strace -f -e trace=network,file,process -ttt -T -o strace_overcommit.log
-		breakpoint()
 
 	pm_name = args.pm_name.lower()
 	if pm_name == 'pypi':
