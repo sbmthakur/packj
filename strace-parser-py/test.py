@@ -69,7 +69,7 @@ def parse(input_file):
     infile.close()
     strace_stream.close()
 
-    with open('./summary.json', mode='w') as f:
+    with open('/packj/summary.json', mode='w') as f:
         f.write(json.dumps(summary, indent=4))
 
 if __name__ == "__main__":

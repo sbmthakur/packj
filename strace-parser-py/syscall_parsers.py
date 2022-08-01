@@ -227,7 +227,7 @@ def parse_execve(ts, name, args_str, args, return_value):
     if '/rm' in path:
         deleted_dir = args[1].split('[')[1].split(']')[0].split(',')[2]
         deleted_dir = deleted_dir.lstrip()
-        data['msg'] = f"directory removed: {deleted_dir}" #args[1] #]'lol' if isinstance(args[1], str) else 'lmao'
+        data['msg'] = f"directory removed: {deleted_dir}"
     else:
         data['msg'] = f"Program execution {status}"
 

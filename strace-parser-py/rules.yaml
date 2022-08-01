@@ -34,7 +34,6 @@ ignore_paths:
   - "/app/deps"
   - "/root/.cache/pip"
   - "/pyvenv.cfg"
-  - "/tmp/pip"
   - "/dev/null"
   - "/usr/share/python-wheels"
   - "venv/lib/python"
@@ -45,3 +44,4 @@ ignore_paths:
   - ".gem"
   - "/bin/gem"
   - "/snap/ruby"
+  - "/tmp"

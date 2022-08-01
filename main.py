@@ -582,14 +582,16 @@ def main(pm_enum, pm_name, pkg_name):
 		install_cmd = None
 
 		if pm_name == 'pypi':
-			install_cmd = f'pip install {pkg_name}'
+			install_cmd = f'pip install -quiet {pkg_name}'
 		elif pm_name == 'npm':
-			install_cmd = f'npm i {pkg_name}'
+			install_cmd = f'npm install --silent {pkg_name}'
+		elif pm_name == 'rubygems':
+			install_cmd = f'gem install --user --silent {pkg_name}'
 
-		cmd = f'cd strace-parser-py/ && strace -f -e trace=network,file,process -ttt -T -o strace_{pkg_name}.log {install_cmd} && python3 test.py strace_{pkg_name}.log'
+		cmd = f'cd strace-parser-py/ && strace -f -e trace=network,file,process -ttt -T -o /tmp/strace_{pkg_name}.log {install_cmd} && python3 test.py /tmp/strace_{pkg_name}.log'
 		os.system(cmd)
 
-		if os.path.exists('./strace-parser-py/summary.json'):
+		if os.path.exists('/packj/summary.json'):
 			print(f'Summary created for {pkg_name}')
 		else:
 			print(f'Could not anaylyze {pkg_name}')
@@ -709,8 +711,19 @@ def get_base_pkg_info():
 		return PackageManagerEnum.rubygems, pm_name, args.pkg_name
 	raise Exception(f'Package manager {pm_name} is not supported')
 
+def in_docker():
+	with open('/proc/self/mountinfo') as file:
+		line = file.readline().strip()
+		while line:
+			if '/docker/containers/' in line:
+				return True
+			line = file.readline().strip()
+	return False
+
 if __name__ == '__main__':
 	try:
+		if not in_docker():
+			print('We recommend running the analysis in a docker container')
 		main(*get_base_pkg_info())
 	except Exception as e_main:
 		print(str(e_main))
