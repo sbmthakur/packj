@@ -40,7 +40,7 @@ import re
 import sys
 import _io
 
-import strace_utils
+import strace_parser.strace_utils
 
 from decimal import *
 

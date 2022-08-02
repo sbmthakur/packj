@@ -15,6 +15,7 @@ from util.files import write_json_to_file, read_from_csv
 from util.enum_util import PackageManagerEnum, LanguageEnum
 from util.formatting import human_format
 from util.repo import git_clone, replace_last
+from util.job_util import in_docker
 
 from parse_apis import parse_api_usage
 from parse_composition import parse_package_composition
@@ -22,6 +23,7 @@ from pm_util import get_pm_proxy
 from static_util import get_static_proxy_for_language
 from static_proxy.static_base import Language2Extensions
 from parse_repo import fetch_repo_data
+from parse_strace import parse_trace_file
 
 # sys.version_info[0] is the major version number. sys.version_info[1] is minor
 if sys.version_info[0] != 3:
@@ -569,6 +571,33 @@ def analyze_apis(pm_name, pkg_name, ver_str, filepath, risks, report):
 	finally:
 		return risks, report
 
+def trace_installation(pm_name, pkg_name, ver_str, risks, report):
+	try:
+		print('[+] Installing package and tracing code...', end='', flush=True)
+		install_cmd = None
+		if pm_name == 'pypi':
+			install_cmd = f'pip install --quiet {pkg_name}=={ver_str}'
+		elif pm_name == 'npm':
+			install_cmd = f'npm install --silent --no-update-notifier {pkg_name}'
+		elif pm_name == 'rubygems':
+			install_cmd = f'gem install --user --silent {pkg_name}'
+
+		# install package under strace and collect system call traces
+		trace_filepath = f'strace_{pkg_name}.log'
+		strace_cmd = f'strace -f -e trace=network,file,process -ttt -T -o {trace_filepath } {install_cmd}'
+		os.system(strace_cmd)
+
+		if not os.path.exists(trace_filepath):
+			raise Exception('no trace generated!')
+
+		parse_trace_file(trace_filepath)
+
+		print(msg_ok(f''))
+	except Exception as e:
+		print(msg_fail(str(e)))
+	finally:
+		return risks, report
+
 def main(pm_enum, pm_name, pkg_name):
 
 	from options import Options
@@ -576,25 +605,6 @@ def main(pm_enum, pm_name, pkg_name):
 	assert opts, 'Failed to parse cmdline args!'
 
 	args = opts.args()
-
-	if args.dynamic:
-
-		install_cmd = None
-
-		if pm_name == 'pypi':
-			install_cmd = f'pip install --quiet {pkg_name}'
-		elif pm_name == 'npm':
-			install_cmd = f'npm install --silent --no-update-notifier {pkg_name}'
-		elif pm_name == 'rubygems':
-			install_cmd = f'gem install --user --silent {pkg_name}'
-
-		cmd = f'cd strace-parser-py/ && strace -f -e trace=network,file,process -ttt -T -o /tmp/strace_{pkg_name}.log {install_cmd} && python3 test.py /tmp/strace_{pkg_name}.log'
-		os.system(cmd)
-
-		if os.path.exists('/packj/summary.json'):
-			print(f'Summary created for {pkg_name}')
-		else:
-			print(f'Could not anaylyze {pkg_name}')
 
 	try:
 		build_threat_model()
@@ -667,6 +677,9 @@ def main(pm_enum, pm_name, pkg_name):
 		risks, report = analyze_apis(pm_name, pkg_name, ver_str, filepath, risks, report)
 		risks, report = analyze_composition(pm_name, pkg_name, ver_str, filepath, risks, report)
 
+	if args.dynamic:
+		trace_installation(pm_name, pkg_name, ver_str, risks, report)
+
 	print('=============================================')
 	if not risks:
 		print('[+] No risks found!')
@@ -693,6 +706,12 @@ def get_base_pkg_info():
 	args = opts.args()
 	assert args, 'Failed to parse cmdline args!'
 
+	if args.dynamic and not in_docker():
+		print(f'*** You\'ve requested package installation trace *** We recommend running in Docker. Continue (N/y): ')
+		stop = input()
+		if stop:
+			exit(1)
+
 	if args.debug:
 		import tempfile
 		_, filename = tempfile.mkstemp(suffix='.log')
@@ -711,19 +730,8 @@ def get_base_pkg_info():
 		return PackageManagerEnum.rubygems, pm_name, args.pkg_name
 	raise Exception(f'Package manager {pm_name} is not supported')
 
-def in_docker():
-	with open('/proc/self/mountinfo') as file:
-		line = file.readline().strip()
-		while line:
-			if '/docker/containers/' in line:
-				return True
-			line = file.readline().strip()
-	return False
-
 if __name__ == '__main__':
 	try:
-		if not in_docker():
-			print('We recommend running the analysis in a docker container')
 		main(*get_base_pkg_info())
 	except Exception as e_main:
 		print(str(e_main))

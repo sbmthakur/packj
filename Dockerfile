@@ -8,11 +8,11 @@ RUN gem install parser:3.0.0.0 google-protobuf:3.21.2 rubocop:1.31.1
 
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && apt-get install -y nodejs
 
-
 COPY . .
 RUN pip3 install -r requirements.txt
 
 #ENTRYPOINT ["python3", "main.py", "--dynamic", "pypi", "Flask"]
-#CMD ["python3", "main.py", "--dynamic", "pypi", "tensorflow"]
+CMD ["python3", "main.py", "pypi", "tensorflow","--dynamic"]
 #CMD ["python3", "main.py", "--dynamic", "rubygems", "a"]
-CMD ["python3", "main.py", "--dynamic", "npm", "express"]
+#CMD ["python3", "main.py", "--dynamic", "npm", "express"]
+#ENTRYPOINT ["python3", "main.py"]

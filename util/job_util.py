@@ -47,6 +47,14 @@ def md5_digest_last_64bits_str(s):
 def md5_digest_last_64bits_int(s):
     return int(md5_digest_last_64bits_str(s), 16)
 
+def in_docker():
+	with open('/proc/self/mountinfo') as file:
+		line = file.readline().strip()
+		while line:
+			if '/docker/containers/' in line:
+				return True
+			line = file.readline().strip()
+	return False
 
 def exec_command(cmd, args, cwd=None, ret_stdout=False, env=None, timeout=None):
     """

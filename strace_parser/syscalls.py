@@ -7,7 +7,7 @@
 # Generate JSON system call table from Linux source
 # https://syscalls.kernelgrok.com/
 
-from syscall_parsers import *
+from strace_parser.syscall_parsers import *
 
 syscall_table = {
 	#
