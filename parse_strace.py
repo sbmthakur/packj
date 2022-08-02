@@ -6,8 +6,8 @@
 
 import sys
 
-from strace import *
-from strace_utils import *
+from strace_parser.strace import *
+from strace_parser.strace_utils import *
 
 import json
 import os,sys
@@ -15,11 +15,11 @@ import os,sys
 #
 # strace usage: strace -f -ttt -T -o strace.log <cmd>
 #
-from syscalls import syscall_table
+from strace_parser.syscalls import syscall_table
 
 summary = {}
 
-def parse(input_file):
+def parse_trace_file(input_file):
     infile = open(input_file, "r")
     strace_stream = StraceInputStream(infile)
 
@@ -74,4 +74,4 @@ def parse(input_file):
 
 if __name__ == "__main__":
     input_file = sys.argv[1]
-    parse(input_file)
+    parse_trace_file(input_file)

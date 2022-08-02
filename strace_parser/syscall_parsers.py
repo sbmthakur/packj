@@ -10,7 +10,7 @@ import html
 from dns import resolver, reversename
 
 rules = None
-with open('./rules.yaml') as f:
+with open('strace_parser/rules.yaml') as f:
     rules = yaml.safe_load(f)
 
 ignore_read = { path for path in rules['ignore_read'] }
