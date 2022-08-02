@@ -42,8 +42,7 @@ syscall_table = {
 	#
     # Link operations
 	#
-	"LINK"		: { "parser" : parse_default,	"category"	: "files" },
-	"LINK"		: { "parser" : parse_default,	"category"	: "files" },
+	"LINK"		: { "parser" : parse_link,	"category"	: "files" },
 	"SYMLINK"	: { "parser" : parse_default,	"category"	: "files" },
 	"SYMLINKAT"	: { "parser" : parse_default,	"category"	: "files" },
 	"UNLINK"	: { "parser" : parse_dir,	"category"	: "files" },

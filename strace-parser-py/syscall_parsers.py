@@ -328,7 +328,17 @@ def parse_unlinkat(ts, name, args_str, args, return_value):
             'path': unlink_path
             }
 
-
+def parse_link(ts, name, args_str, args, return_value):
+    try:
+        return {
+            'oldpath': args[0],
+            'newpath': args[1],
+            'msg': 'Hard link created'
+        }
+    except:
+        print(f"Could not process link {args_str}")
+        return
+    
 def parse_default(ts, name, args_str, args, return_value):
     return {'msg' : f'{name} not handled'}
 

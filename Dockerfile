@@ -13,6 +13,6 @@ COPY . .
 RUN pip3 install -r requirements.txt
 
 #ENTRYPOINT ["python3", "main.py", "--dynamic", "pypi", "Flask"]
-#CMD ["python3", "main.py", "--dynamic", "pypi", "Flask"]
-CMD ["python3", "main.py", "--dynamic", "rubygems", "a"]
-#CMD ["python3", "main.py", "--dynamic", "npm", "a"]
+#CMD ["python3", "main.py", "--dynamic", "pypi", "tensorflow"]
+#CMD ["python3", "main.py", "--dynamic", "rubygems", "a"]
+CMD ["python3", "main.py", "--dynamic", "npm", "express"]
