@@ -29,6 +29,9 @@ files_created = set()
 files_written = set()
 ip_address_found = set()
 process_found = set()
+directories_created = set()
+directories_removed = set()
+file_unlinked = set()
 
 OPENED_PATHS = {}
 LAST_CHDIR_PATH = None
@@ -131,6 +134,9 @@ def parse_open(ts, name, args_str, args, return_value):
         if 'AT_FDCWD' not in args[0]:
             path = OPENED_PATHS[str(return_value)]
 
+            if not check_paths(path, 'read'):
+                return
+
             if path in files_read: 
                 return
 
@@ -140,6 +146,9 @@ def parse_open(ts, name, args_str, args, return_value):
         else:
             if updated_path[0] != '/' and LAST_CHDIR_PATH != None:
                 updated_path = LAST_CHDIR_PATH + updated_path
+
+            if not check_paths(updated_path, 'read'):
+                return
 
             if updated_path in files_read: 
                 return
@@ -198,6 +207,9 @@ def parse_chmod(ts, name, args_str, args, return_value):
     path = unescape_path(args[0])
     if path[0] != '/' and LAST_CHDIR_PATH != None:
         path = LAST_CHDIR_PATH + path
+
+    if not check_paths(path,'all'):
+        return
 
     data['path'] = path
 
@@ -296,19 +308,32 @@ def parse_data_transfer(ts, name, args_str, args, return_value):
 def parse_dir(ts, name, args_str, args, return_value):
     msg = None
 
-    if not check_paths(args_str, 'all'):
-        return
-
-    if name == 'mkdir':
-        msg = 'Directory created'
-    elif name == 'rmdir':
-        msg = 'Directory created'
-    elif name == 'unlink':
-        msg = 'File unlinked'
 
     path = unescape_path(args[0])
     if path[0] != '/' and LAST_CHDIR_PATH != None:
         path = LAST_CHDIR_PATH + path
+
+    if not check_paths(path, 'all'):
+        return
+
+    if name == 'mkdir':
+        if path in directories_created:
+            return
+        
+        directories_created.add(path)
+        msg = 'Directory created'
+    elif name == 'rmdir':
+        if path in directories_removed:
+            return
+        
+        directories_removed.add(path)
+        msg = 'Directory removed'
+    elif name == 'unlink':
+        if path in file_unlinked:
+            return
+        
+        file_unlinked.add(path)
+        msg = 'File unlinked'
 
     return {
             'msg' : msg,
@@ -319,6 +344,11 @@ def parse_unlinkat(ts, name, args_str, args, return_value):
     try:
         unlink_path = OPENED_PATHS[str(args[0])] + '/' + args[1]
         unlink_path = unlink_path.replace('"', '')
+        if unlink_path[0] != '/' and LAST_CHDIR_PATH != None:
+           unlink_path = LAST_CHDIR_PATH + unlink_path
+
+        if not check_paths(unlink_path, 'all'):
+            return
     except:
         print(f"unlink failed for {args_str}") 
         return

@@ -22,6 +22,7 @@ ignore_read:
   - "/npm-shrinkwrap.json"
   - "/package-lock.json"
   - "/yarn.lock"
+  - "/tmp"
     
 # Ignore these paths for read/write 
 ignore_paths:
