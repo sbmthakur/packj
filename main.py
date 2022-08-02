@@ -578,7 +578,7 @@ def trace_installation(pm_name, pkg_name, ver_str, risks, report):
 		if pm_name == 'pypi':
 			install_cmd = f'pip install --quiet {pkg_name}=={ver_str}'
 		elif pm_name == 'npm':
-			install_cmd = f'npm install --silent {pkg_name}'
+			install_cmd = f'npm install --silent --no-update-notifier {pkg_name}'
 		elif pm_name == 'rubygems':
 			install_cmd = f'gem install --user --silent {pkg_name}'
 
