@@ -11,8 +11,5 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && apt-get install
 COPY . .
 RUN pip3 install -r requirements.txt
 
-#ENTRYPOINT ["python3", "main.py", "--dynamic", "pypi", "Flask"]
-CMD ["python3", "main.py", "pypi", "tensorflow","--dynamic"]
-#CMD ["python3", "main.py", "--dynamic", "rubygems", "a"]
-#CMD ["python3", "main.py", "--dynamic", "npm", "express"]
+ENTRYPOINT ["./start.sh"]
 #ENTRYPOINT ["python3", "main.py"]
