@@ -16,7 +16,7 @@ WORKDIR /packj
 
 #COPY --chown=ubuntu:ubuntu . .
 COPY . .
-RUN apt-get update -y && apt-get install -y python3 gcc python3-dev python3-pip python3.8-venv strace vim curl
+RUN apt-get update -y && apt-get install -y python3 gcc python3-dev python3-pip python3.8-venv strace git vim curl
 
 #&& python3 -m venv venv && . venv/bin/activate && pip3 install -r requirements.txt && pip3 list
 
