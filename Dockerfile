@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-WORKDIR /packj
+WORKDIR /tmp/packj
 
 #RUN apt-get update -y
 #RUN apt-get install -y python3 gcc python3-dev python3-pip strace vim #ruby-full rubygems-integration musl-dev protobuf-compiler git ruby-full libmagic-dev curl
@@ -28,7 +28,7 @@ RUN apt-get update -y && apt-get install -y python3 gcc python3-dev python3-pip 
 #ruby-full rubygems-integration musl-dev protobuf-compiler git ruby-full libmagic-dev 
 #RUN find /home/ubuntu -type f -exec touch {} + && pip3 install -r requirements.txt
 
-#ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["bash", "./trace.sh"]
 #ENTRYPOINT ["python3", "main.py"]
 #CMD ["python3", "main.py", "--dynamic", "pypi", "tensorflow"]
 
