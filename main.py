@@ -583,7 +583,8 @@ def trace_installation(pm_name, pkg_name, ver_str, risks, report):
 			install_cmd = f'gem install --user --silent {pkg_name}'
 
 		# install package under strace and collect system call traces
-		trace_filepath = f'strace_{pkg_name}.log'
+		import tempfile
+		_, trace_filepath = tempfile.mkstemp(suffix='_strace_{pkg_name}.log')
 		strace_cmd = f'strace -f -e trace=network,file,process -ttt -T -o {trace_filepath } {install_cmd}'
 		os.system(strace_cmd)
 
