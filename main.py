@@ -576,7 +576,7 @@ def trace_installation(pm_name, pkg_name, ver_str, risks, report):
 		print('[+] Installing package and tracing code...', end='', flush=True)
 		install_cmd = None
 		if pm_name == 'pypi':
-			install_cmd = f'pip install --quiet {pkg_name}=={ver_str}'
+			install_cmd = f'pip install --quiet --no-warn-script-location {pkg_name}=={ver_str}'
 		elif pm_name == 'npm':
 			install_cmd = f'npm install --silent --no-update-notifier {pkg_name}'
 		elif pm_name == 'rubygems':
