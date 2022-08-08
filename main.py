@@ -584,14 +584,29 @@ def trace_installation(pm_name, pkg_name, ver_str, risks, report):
 
 		# install package under strace and collect system call traces
 		import tempfile
-		_, trace_filepath = tempfile.mkstemp(suffix='_strace_{pkg_name}.log')
+		_, trace_filepath = tempfile.mkstemp(suffix=f'_strace_{pkg_name}.log')
 		strace_cmd = f'strace -f -e trace=network,file,process -ttt -T -o {trace_filepath } {install_cmd}'
 		os.system(strace_cmd)
+
+		_, install_package_file = tempfile.mkstemp(suffix=f'_import_strace_{pkg_name}.log')
+
+		import_cmd = f'python3 -c "import {pkg_name.lower()}"'
+
+		import_strace = f'strace -f -e trace=network,file,process -ttt -T -o {install_package_file} {import_cmd}'
+		os.system(import_strace)
 
 		if not os.path.exists(trace_filepath):
 			raise Exception('no trace generated!')
 
-		parse_trace_file(trace_filepath)
+		if not os.path.exists(install_package_file):
+			raise Exception('no trace generated due to module import!')
+
+		_, final_log_file = tempfile.mkstemp(suffix=f'_{pkg_name}.log')
+
+		os.system(f'cat {trace_filepath} > {final_log_file}')
+		os.system(f'cat {install_package_file} >> {final_log_file}')
+
+		parse_trace_file(final_log_file)
 
 		print(msg_ok(f''))
 	except Exception as e:
