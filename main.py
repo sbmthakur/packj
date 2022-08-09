@@ -595,7 +595,7 @@ def trace_installation(pm_name, pkg_name, ver_str, risks, report):
 		if pm_name == 'pypi':
 			import_cmd = f'python3 exercise_py3.py {pkg_name}'
 		elif pm_name == 'npm':
-			import_cmd = f'node -e require("{pkg_name}")'
+			import_cmd = f'node exercise.js {pkg_name}'
 		elif pm_name == 'rubygems':
 			import_cmd = f'ruby exercise.rb {pkg_name}'
 
