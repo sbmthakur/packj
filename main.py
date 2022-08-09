@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from enum import Enum
 import sys
 import os
+import subprocess
 import logging
 from typing import Optional
 
@@ -590,9 +591,17 @@ def trace_installation(pm_name, pkg_name, ver_str, risks, report):
 
 		_, install_package_file = tempfile.mkstemp(suffix=f'_import_strace_{pkg_name}.log')
 
-		import_cmd = f'python3 -c "import {pkg_name.lower()}"'
+		import_cmd = None
+		if pm_name == 'pypi':
+			import_cmd = f'python3 exercise_py3.py {pkg_name}'
+		elif pm_name == 'npm':
+			import_cmd = f'node -e require("{pkg_name}")'
+		elif pm_name == 'rubygems':
+			import_cmd = f'ruby -e "require \"{pkg_name}\""'
+
 
 		import_strace = f'strace -f -e trace=network,file,process -ttt -T -o {install_package_file} {import_cmd}'
+
 		os.system(import_strace)
 
 		if not os.path.exists(trace_filepath):
