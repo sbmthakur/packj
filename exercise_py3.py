@@ -3,12 +3,30 @@
 # https://docs.python.org/3/library/types.html
 import importlib
 import pkgutil
-#import types
+import types
 import sys
 import logging
-#import atexit
+import atexit
 import pkg_resources
-#import timeout_decorator
+import timeout_decorator
+
+data_types = {dict, list, set, frozenset, tuple, str, bytes, range, bytearray, memoryview,
+              types.CodeType,types.MappingProxyType}
+debug_types = {types.TracebackType, types.FrameType}
+descriptor_types = {types.GetSetDescriptorType, types.MemberDescriptorType}
+function_types = {types.FunctionType, types.LambdaType, types.BuiltinFunctionType,
+                  types.BuiltinMethodType, types.MethodType, types.CoroutineType}
+class_types = {type,}
+generator_types = {types.GeneratorType,}
+utility_types = {types.SimpleNamespace, types.DynamicClassAttribute}
+module_types = {types.ModuleType,}
+try:
+    function_types.update({types.MethodWrapperType})
+    descriptor_types.update({types.WrapperDescriptorType, types.MethodDescriptorType, types.ClassMethodDescriptorType})
+    generator_types.update({types.AsyncGeneratorType})
+except Exception as e:
+    logging.debug("Not available in current python, ignore them!")
+
 
 def get_all_modules(root_module):
     """
@@ -49,7 +67,6 @@ def get_all_modules(root_module):
     return visited
 
 
-"""
 @timeout_decorator.timeout(20)
 def try_init_module_attr(mod, attr):
     try:
@@ -71,6 +88,7 @@ def try_init_module_attr(mod, attr):
     except Exception as e:
         logging.error("Error init mod %s attr %s: %s", mod, attr, str(e))
 
+
 def try_init_module_attrs(mod):
     # check module
     if type(mod) not in module_types:
@@ -87,6 +105,8 @@ def try_init_module_attrs(mod):
             try_init_module_attr(mod, attr)
         except Exception as e:
             logging.error("Error init mod %s: %s", mod, str(e))
+
+
 @atexit.register
 def handle_remaining_modules():
     if all_modules is None:
@@ -100,13 +120,12 @@ def handle_remaining_modules():
             try_init_module_attrs(mod=module)
         except Exception as e:
             logging.error("Error checking module %s: %s", module, str(e))
-"""
 
 
 if __name__ == "__main__":
-  # if len(sys.argv) != 2:
-  #     print("Usage: %s PKG_NAME" % sys.argv[0])
-  #     exit(1)
+    if len(sys.argv) != 2:
+        print("Usage: %s PKG_NAME" % sys.argv[0])
+        exit(1)
 
     global all_modules
     global completed_modules
@@ -118,5 +137,14 @@ if __name__ == "__main__":
     pkg_name = sys.argv[1]
     root_module_name = list(pkg_resources.get_distribution(pkg_name)._get_metadata('top_level.txt'))[0]
     root_module = importlib.import_module(root_module_name)
-    #all_modules = get_all_modules(root_module=root_module)
-    get_all_modules(root_module=root_module)
+    all_modules = get_all_modules(root_module=root_module)
+    raise SystemExit
+
+    # for each module, try to initialize its attributes
+    for module in all_modules:
+        completed_modules.add(module)
+        try:
+            try_init_module_attrs(mod=module)
+        except Exception as e:
+            logging.error("Error checking module %s: %s", module, str(e))
+
