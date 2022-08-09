@@ -597,8 +597,7 @@ def trace_installation(pm_name, pkg_name, ver_str, risks, report):
 		elif pm_name == 'npm':
 			import_cmd = f'node -e require("{pkg_name}")'
 		elif pm_name == 'rubygems':
-			import_cmd = f'ruby -e "require \"{pkg_name}\""'
-
+			import_cmd = f'ruby exercise.rb {pkg_name}'
 
 		import_strace = f'strace -f -e trace=network,file,process -ttt -T -o {install_package_file} {import_cmd}'
 
