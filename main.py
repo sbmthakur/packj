@@ -8,6 +8,7 @@ import sys
 import os
 import logging
 import tempfile
+import yaml
 from typing import Optional
 
 from util.net import __parse_url, download_file, check_site_exist, check_domain_popular
@@ -43,11 +44,16 @@ msg_fail = msg_factory('FAILED [{0}]')
 msg_ok = msg_factory('OK [{0}]')
 msg_alert = msg_factory('ALERT [{0}]')
 
-def build_threat_model(filename='threats.csv'):
-	for line in read_from_csv(filename, skip_header=True):
-		typ = line[0]
-		attr = line[1].strip('\n')
-		THREAT_MODEL[attr] = typ
+def build_threat_model(filename='packj.yaml'):
+	with open(filename) as f:
+		config_data = yaml.safe_load(f)
+
+		for category,category_data in config_data['audit']['alerts'].items():
+			for sub_category, sub_data in category_data.items():
+				for item in sub_data:
+					if item.get('enabled') == True:
+						THREAT_MODEL[sub_category] = category
+						break
 
 def alert_user(alert_type, threat_model, reason, risks):
 	if alert_type in threat_model:
