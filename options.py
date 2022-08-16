@@ -20,6 +20,11 @@ class Options():
 		# Sandbox sub-command
 		parser_sandbox = subparsers.add_parser('sandbox', help='Sandbox package installation to mitigate risks')
 
+		parser_deps = subparsers.add_parser('deps', help='Anaylyze deps from a dependency file')
+
+		parser_deps.add_argument(dest='file_name', \
+					help="Deps file - requirements.txt/package.json/Gemfile", action="store")
+
 		# positional args
 		for p in parser_audit, parser_sandbox:
 			p.add_argument(dest="pm_name", \

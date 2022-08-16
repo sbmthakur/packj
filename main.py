@@ -731,6 +731,9 @@ def parse_request_args():
 	args = opts.args()
 	assert args, 'Failed to parse cmdline args!'
 
+	#breakpoint()
+	if args.cmd == 'deps':
+		return 'deps', args, None
 	# XXX expects host volume to be mounted inside container
 	if in_docker():
 		container_mountpoint = '/tmp/packj'
@@ -781,11 +784,45 @@ def parse_request_args():
 
 	return args.cmd, (pm_enum, pm_name, args.pkg_name, args.ver_str), (report_dir, host_volume, container_mountpoint, install_trace)
 
+"""
+def generate_html_report():
+
+	report = "<table>"
+	with open('./tempfile') as f:
+		for line in f:
+			if '===' in line:
+				break	
+			
+			report += "<tr>"
+			report += f"<td>{line}</td>"
+			report += "</tr>"
+"""
+
+def handle_deps(args, extra_args):
+	file_name = args.file_name
+
+	html = "<table>"
+	with open(file_name) as f:
+		for line in f:
+			if '==' in line:
+				break
+			#print(line)
+			name, summary = line.split(',')
+			html += f'<tr><td>{name}</td><td>{summary}</td></tr>'
+			#print(name)
+		html += '</table>'
+
+	with open(f'/tmp/{file_name}.htm', mode='w') as f:
+		f.write(html)
+
 if __name__ == '__main__':
 	import traceback
 	try:
 		cmd, args, extra_args = parse_request_args()
-		if cmd == 'audit':
+
+		if cmd == 'deps':
+			handle_deps(args, extra_args)
+		elif cmd == 'audit':
 			audit(*args, extra_args)
 		else:
 			sandbox(*args)
