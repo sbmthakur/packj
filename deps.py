@@ -78,8 +78,13 @@ def main(args):
     with open('./tempfile', mode='w') as f:
         for pkg_info in packages:
             name, version = pkg_info['name'], pkg_info['version']
-            o = subprocess.check_output(['python', 'main.py', 'audit',pm_name, name], stderr=subprocess.STDOUT)
-            print(pm_name, name)
+
+            inputs = ['python', 'main.py', 'audit', pm_name, name]
+
+            if version:
+                inpupts.append(version)
+
+            o = subprocess.check_output(inputs, stderr=subprocess.STDOUT)
             pkg_result = o.decode('utf-8').split('\n')[-4]
             pkg_result = pkg_result.replace('[+] ', '')
 
