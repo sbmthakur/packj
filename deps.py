@@ -86,7 +86,7 @@ def main(args):
 
             try:
                 o = subprocess.check_output(inputs, stderr=subprocess.STDOUT)
-            except subprocess.CalledProcessError as exc:
+            except subprocess.CalledProcessError as e:
             #except Exception as e:
                 print(f'subprocess failed: {e.output}')
                 continue
