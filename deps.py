@@ -38,7 +38,7 @@ def get_packages_from_file(filepath):
     finally:
         return packages
 
-def create_html(total_risks):
+def create_html(total_risks, file_name):
 
 	html = f"<details><summary>{total_risks} issues found with dependencies. Click here for details</summary>"
 	html += "<h2> Packj security scan report </h2>"
@@ -48,7 +48,7 @@ def create_html(total_risks):
 			if '==' in line:
 				break
 			name, summary = line.split('|')
-			html += f'<tr><td>{name}</td><td>{summary}</td><td>{filepath}</td></tr>'
+			html += f'<tr><td>{name}</td><td>{summary}</td><td>{file_name}</td></tr>'
 		html += '</table></details>'
 
 	file_name = "deps"
@@ -110,7 +110,7 @@ def main(args):
 
         f.write('======')
     
-    create_html(total_risks)
+    create_html(total_risks, file_name)
 
 
 
