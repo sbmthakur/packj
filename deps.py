@@ -41,7 +41,7 @@ def get_packages_from_file(filepath):
 def create_html(total_risks):
 
 	html = f"<details><summary>{total_risks} issues found with dependencies. Click here for details</summary>"
-    html += "<h2> Packj security scan report </h2>"
+	html += "<h2> Packj security scan report </h2>"
 	html += "<table><tr><th>Package name</th><th>Description</th><th>Dependency file</th></tr>"
 	with open('./tempfile') as f:
 		for line in f:
@@ -80,7 +80,7 @@ def main(args):
         for pkg_info in packages:
             name, version = pkg_info['name'], pkg_info['version']
 
-            inputs = ['python', 'packj/main.py', 'audit', pm_name, name]
+            inputs = ['python', 'main.py', 'audit', pm_name, name]
 
             if version:
                 inputs.append(version)
