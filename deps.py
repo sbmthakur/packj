@@ -40,14 +40,15 @@ def get_packages_from_file(filepath):
 
 def create_html(total_risks):
 
-	html = f"<details><summary>{total_risks} issues found with the dependencies</summary>"
-	html += "<table>"
+	html = f"<details><summary>{total_risks} issues found with dependencies. Click here for details</summary>"
+    html += "<h2> Packj security scan report </h2>"
+	html += "<table><tr><th>Package name</th><th>Description</th><th>Dependency file</th></tr>"
 	with open('./tempfile') as f:
 		for line in f:
 			if '==' in line:
 				break
 			name, summary = line.split('|')
-			html += f'<tr><td>{name}</td><td>{summary}</td></tr>'
+			html += f'<tr><td>{name}</td><td>{summary}</td><td>{filepath}</td></tr>'
 		html += '</table></details>'
 
 	file_name = "deps"
