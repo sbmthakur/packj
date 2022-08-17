@@ -86,8 +86,8 @@ def main(args):
 
             try:
                 o = subprocess.check_output(inputs, stderr=subprocess.STDOUT)
-            except e:
-                print(e)
+            except Exception as e:
+                print(f'subprocess failed: {e}')
 
             pkg_result = o.decode('utf-8').split('\n')[-4]
             pkg_result = pkg_result.replace('[+] ', '')
@@ -97,9 +97,8 @@ def main(args):
             try:
                 n = int(pkg_result[0])
                 total_risks += n
-            except e:
-                print(e)
-                exit(1)
+            except:
+                print(f'Not a numeric character {pkg_result[0]}')
 
 
             f.write(f'{name}| {pkg_result}\n')
