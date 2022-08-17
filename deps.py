@@ -82,7 +82,7 @@ def main(args):
             inputs = ['python', 'main.py', 'audit', pm_name, name]
 
             if version:
-                inpupts.append(version)
+                inputs.append(version)
 
             o = subprocess.check_output(inputs, stderr=subprocess.STDOUT)
             pkg_result = o.decode('utf-8').split('\n')[-4]
