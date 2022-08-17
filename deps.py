@@ -84,7 +84,11 @@ def main(args):
             if version:
                 inputs.append(version)
 
-            o = subprocess.check_output(inputs, stderr=subprocess.STDOUT)
+            try:
+                o = subprocess.check_output(inputs, stderr=subprocess.STDOUT)
+            except e:
+                print(e)
+
             pkg_result = o.decode('utf-8').split('\n')[-4]
             pkg_result = pkg_result.replace('[+] ', '')
 
@@ -94,7 +98,8 @@ def main(args):
                 n = int(pkg_result[0])
                 total_risks += n
             except e:
-                print(n)
+                print(e)
+                exit(1)
 
 
             f.write(f'{name}| {pkg_result}\n')
