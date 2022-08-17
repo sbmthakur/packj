@@ -79,7 +79,7 @@ def main(args):
         for pkg_info in packages:
             name, version = pkg_info['name'], pkg_info['version']
 
-            inputs = ['python', 'main.py', 'audit', pm_name, name]
+            inputs = ['python3', 'main.py', 'audit', pm_name, name]
 
             if version:
                 inputs.append(version)
