@@ -88,6 +88,7 @@ def main(args):
                 o = subprocess.check_output(inputs, stderr=subprocess.STDOUT)
             except Exception as e:
                 print(f'subprocess failed: {e}')
+                continue
 
             pkg_result = o.decode('utf-8').split('\n')[-4]
             pkg_result = pkg_result.replace('[+] ', '')
