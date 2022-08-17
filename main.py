@@ -18,8 +18,10 @@ if __name__ == '__main__':
 		args = opts.args()
 		assert args, 'Failed to get cmdline args!'
 
-		if cmd == 'deps':
-			handle_deps(args, extra_args)
+		if args.cmd == 'deps':
+			from deps import main
+			main(args)
+			#handle_deps(args, extra_args)
 		# audit request
 		elif args.cmd == 'audit':
 			from audit import main
