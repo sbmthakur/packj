@@ -44,6 +44,36 @@ def get_node_packages(filepath):
             packages.append(pkg)
     return packages
 
+def get_gems(filepath):
+    packages = []
+    try:
+        o = subprocess.check_output(['ruby', 'parse_gemfile.rb'], stderr=subprocess.STDOUT)
+        pkgs = o.decode('utf-8').split('\n')
+        breakpoint()
+
+        for pkg in pkgs:
+            try:
+                name_re = re.search(r".* ", pkg)
+                name = name_re.group(0).replace(' ', '')
+
+                version_re = re.search(r"\((.*?)\)", pkg)
+                version = version_re.group(0).replace('(', '').replace(')', '')
+            except:
+                print('Error')
+                continue
+
+            pkg_data = {
+                "name": name,
+                "version": version
+            }
+
+            packages.append(pkg_data)
+
+        return packages
+
+    except subprocess.CalledProcessError as e:
+        print(f'subprocess failed while parsing rubygems: {e.output}')
+
 def get_packages_from_file(filepath, pm_name):
     packages = []
     try:
@@ -51,6 +81,9 @@ def get_packages_from_file(filepath, pm_name):
             packages = get_python_packages(filepath)
         elif pm_name == 'npm':
             packages = get_node_packages(filepath)
+        elif pm_name == 'rubygems':
+            packages = get_gems(filepath)
+            breakpoint()
         
     except Exception as e:
         print("Failed to parse %s for packages" % (tmpfile, str(e)))
