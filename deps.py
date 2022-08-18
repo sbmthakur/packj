@@ -49,7 +49,6 @@ def get_gems(filepath):
     try:
         o = subprocess.check_output(['ruby', 'parse_gemfile.rb'], stderr=subprocess.STDOUT)
         pkgs = o.decode('utf-8').split('\n')
-        breakpoint()
 
         for pkg in pkgs:
             try:
@@ -59,7 +58,7 @@ def get_gems(filepath):
                 version_re = re.search(r"\((.*?)\)", pkg)
                 version = version_re.group(0).replace('(', '').replace(')', '')
             except:
-                print('Error')
+                print(f'Invalid gem: {pkg}')
                 continue
 
             pkg_data = {
@@ -83,7 +82,6 @@ def get_packages_from_file(filepath, pm_name):
             packages = get_node_packages(filepath)
         elif pm_name == 'rubygems':
             packages = get_gems(filepath)
-            breakpoint()
         
     except Exception as e:
         print("Failed to parse %s for packages" % (tmpfile, str(e)))
@@ -130,7 +128,6 @@ def main(args):
                 pm_name = 'pypi'
 
             packages = get_packages_from_file(file_name, pm_name)
-            #breakpoint()
 
             for pkg_info in packages:
                 name, version = pkg_info['name'], pkg_info['version']
@@ -151,7 +148,7 @@ def main(args):
 
                 if pm_name == 'pypi':
                     index = -4
-                elif pm_name == 'npm':
+                elif pm_name == 'npm' or pm_name == 'rubygems':
                     index = -3
 
                 pkg_result = o.decode('utf-8').split('\n')[index]
