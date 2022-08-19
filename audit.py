@@ -17,7 +17,7 @@ from util.files import write_json_to_file, read_from_csv
 from util.enum_util import PackageManagerEnum, LanguageEnum
 from util.formatting import human_format
 from util.repo import git_clone, replace_last
-from util.job_util import exec_command, in_docker, is_mounted
+from util.job_util import exec_command, in_docker, in_podman, is_mounted
 
 from parse_apis import parse_api_usage
 from parse_composition import parse_package_composition
@@ -766,7 +766,8 @@ def parse_request_args(args):
 
 	# check if installation trace has been requested
 	if args.trace:
-		if not in_docker():
+		if not (in_docker() or in_podman()):
+			print(f'podman {in_podman()}')
 			print(f'*** You\'ve requested package installation trace *** We recommend running in Docker. Continue (N/y): ', end='')
 			stop = input()
 			if stop != 'y':

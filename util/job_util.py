@@ -60,6 +60,9 @@ def is_mounted(path):
 def in_docker():
 	return is_mounted('/docker/containers/')
 
+def in_podman():
+    return os.path.exists('/run/.containerenv')
+
 def exec_command(cmd, args, cwd=None, env=None, timeout=600, redirect_mask:int=0):
     """
     Executes shell command
