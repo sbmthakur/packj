@@ -730,7 +730,7 @@ def parse_request_args(args):
 	container_mountpoint = None
 
 	# XXX expects host volume to be mounted inside container
-	if in_docker():
+	if in_docker() or in_podman():
 		container_mountpoint = '/tmp/packj'
 		host_volume = is_mounted(container_mountpoint)
 		if not host_volume or not os.path.exists(container_mountpoint):
@@ -767,7 +767,6 @@ def parse_request_args(args):
 	# check if installation trace has been requested
 	if args.trace:
 		if not (in_docker() or in_podman()):
-			print(f'podman {in_podman()}')
 			print(f'*** You\'ve requested package installation trace *** We recommend running in Docker. Continue (N/y): ', end='')
 			stop = input()
 			if stop != 'y':
